@@ -12,9 +12,7 @@ Personal portfolio.
 ## Screenshots
 
 ![web](https://carbonyl.io/static/screenshots/a.png)
-![mobile](https://carbonyl.io/static/screenshots/b.png)
-
-
+<img src="https://carbonyl.io/static/screenshots/b.png" alt="mobile" width="400"/>
 
 ## Deployment
 
