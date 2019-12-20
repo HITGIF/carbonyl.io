@@ -11,8 +11,8 @@ Personal portfolio.
 
 ## Screenshots
 
-![web](build/static/screenshots/a.png)
-![mobile](build/static/screenshots/b.png)
+![web](https://carbonyl.io/static/screenshots/a.png)
+![mobile](https://carbonyl.io/static/screenshots/b.png)
 
 
 
