@@ -9,7 +9,7 @@ import './res/styles.css';
 import './res/menu.css';
 
 export const BLOG_URL = "https://blog.carbonyl.io"
-export const RESUME_URL = "https://carbonyl.io/resume"
+export const RESUME_URL = "https://carbonyl.io/resume.pdf"
 export const GITHUB_URL = "https://github.com/HITGIF"
 
 export default function Carbonyl () {
