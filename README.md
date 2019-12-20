@@ -1,5 +1,5 @@
 <p align='center'>
-    <img width="192" src="public/carb_192.png" alt="Carbonyl logo">
+    <img width="192" src="public/carb_512.png" alt="Carbonyl logo">
 </p>
 <div align="center">
 
