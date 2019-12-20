@@ -1,5 +1,5 @@
 <p align='center'>
-    <img width="192" src="https://carbonyl.io/carb_192.png" alt="Carbonyl logo">
+    <img width="192" src="public/carb_192.png" alt="Carbonyl logo">
 </p>
 <div align="center">
 
@@ -11,11 +11,11 @@ Personal portfolio.
 
 ## Screenshots
 
-![web](https://carbonyl.io/screenshots/a.png)
+![web](public/screenshots/a.png)
 
 | | |
 |:-------------------------:|:-------------------------:|
-|<img src="https://carbonyl.io/screenshots/b.png" alt="mobile1"/> | <img src="https://carbonyl.io/screenshots/c.png" alt="mobile2"/> |
+|<img src="public/screenshots/b.png" alt="mobile1"/> | <img src="public/screenshots/c.png" alt="mobile2"/> |
 
 
 ## Deployment
