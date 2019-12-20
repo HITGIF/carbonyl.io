@@ -12,8 +12,8 @@ Personal portfolio.
 ## Screenshots
 
 ![web](https://carbonyl.io/static/screenshots/a.png)
-<img align="left" src="https://carbonyl.io/static/screenshots/b.png" alt="mobile" width="50%"/>
-<img src="https://carbonyl.io/static/screenshots/c.png" alt="mobile" width="50%"/>
+<img align="left" src="https://carbonyl.io/static/screenshots/b.png" alt="mobile" width="48.8%"/>
+<img src="https://carbonyl.io/static/screenshots/c.png" alt="mobile" width="48.8%"/>
 
 ## Deployment
 
@@ -35,5 +35,3 @@ npm start
 ## License
 
 This project is licensed under the terms of the [MIT license](/LICENSE).
-
-## `left` alignment
