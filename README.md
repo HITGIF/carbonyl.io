@@ -3,7 +3,7 @@
 </p>
 <div align="center">
 
-# Carbonyl.io
+# [Carbonyl.io](https://carbonyl.io)
 
 Personal portfolio.
 
@@ -11,11 +11,11 @@ Personal portfolio.
 
 ## Screenshots
 
-![web](https://carbonyl.io/static/screenshots/a.png)
+![web](https://carbonyl.io/screenshots/a.png)
 
 | | |
 |:-------------------------:|:-------------------------:|
-|<img src="https://carbonyl.io/static/screenshots/b.png" alt="mobile1"/> | <img src="https://carbonyl.io/static/screenshots/c.png" alt="mobile2"/> |
+|<img src="https://carbonyl.io/screenshots/b.png" alt="mobile1"/> | <img src="https://carbonyl.io/screenshots/c.png" alt="mobile2"/> |
 
 
 ## Deployment
