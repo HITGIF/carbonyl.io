@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faRss, faFilePdf, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {faGithub} from '@fortawesome/free-brands-svg-icons'
 import {Canvas} from 'react-three-fiber'
+import Div100vh from 'react-div-100vh'
 import ModelView from "./ModelView";
 import Menu from "./Menu";
 import './res/styles.css';
@@ -23,7 +24,7 @@ export default function Carbonyl () {
   }
 
   return (
-    <div className="root">
+    <Div100vh className="root">
       <div className='canvas-container'>
         <Canvas>
           <directionalLight intensity={3}/>
@@ -105,6 +106,6 @@ export default function Carbonyl () {
         <div className={animate ? open ? 'line' : 'cross-R' : open ? 'cross-R' : 'line'}/>
         <div className={animate ? open ? 'line' : 'cross-L' : open ? 'cross-L' : 'line'}/>
       </div>
-    </div>
+    </Div100vh>
   );
 }

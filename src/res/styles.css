@@ -21,14 +21,13 @@ a {
   align-items: center;
   justify-content: flex-end;
   width: 100vw;
-  height: 100vh;
   overflow: hidden;
   background-color: var(--main-bg-color);
 }
 
 .canvas-container {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
