@@ -12,6 +12,7 @@ const Asset = React.forwardRef((props, ref) => {
 export default function ModelView() {
     const ref = React.useRef();
     useFrame(() => {
+        if (!ref.current) return;
         // @ts-ignore
         ref.current.rotation.x += 0.01;
         // @ts-ignore
