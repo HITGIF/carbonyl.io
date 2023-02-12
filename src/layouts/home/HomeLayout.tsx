@@ -58,7 +58,7 @@ const InfoIcon = styled(FontAwesomeIcon)`
 export default function HomeLayout() {
     return (
         <StyledRoot>
-            <Canvas style={{
+            <Canvas linear flat style={{
                 width: "100vw",
                 height: "100%",
                 position: "absolute",
