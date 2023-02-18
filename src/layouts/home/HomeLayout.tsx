@@ -57,7 +57,6 @@ const InfoIcon = styled(FontAwesomeIcon)`
 `;
 
 export default function HomeLayout() {
-    console.log(isMobile)
     return (
         <StyledRoot>
             <Canvas linear flat style={{
