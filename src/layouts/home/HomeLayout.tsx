@@ -5,9 +5,7 @@ import { Canvas } from "react-three-fiber";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { IconButton } from "@mui/material";
-import { Delete, Pause, PlayArrow } from "@mui/icons-material";
-import { useState } from "react";
+import { isMobile } from "react-device-detect";
 
 const StyledRoot = styled("div")(({theme}) => ({
     display: "flex",
@@ -52,15 +50,6 @@ const CitationContainer = styled("div")`
   }
 `;
 
-const StyledButton = styled(IconButton)`
-  position: absolute;
-  bottom: 15px;
-  right: 20px;
-  //color: white;
-  //background-color: #3f51b5;
-  //transition: .2s;
-`;
-
 const InfoIcon = styled(FontAwesomeIcon)`
   color: white;
   width: 15px;
@@ -68,7 +57,7 @@ const InfoIcon = styled(FontAwesomeIcon)`
 `;
 
 export default function HomeLayout() {
-    // const [play, setPlay] = useState(false);
+    console.log(isMobile)
     return (
         <StyledRoot>
             <Canvas linear flat style={{
@@ -80,7 +69,7 @@ export default function HomeLayout() {
             }}>
                 <directionalLight intensity={3}/>
                 <ambientLight intensity={1}/>
-                <ModelView/>
+                <ModelView play={isMobile}/>
             </Canvas>
             <Main>
                 <Outlet/>
@@ -95,9 +84,6 @@ export default function HomeLayout() {
                     <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY </a>
                 </span>
             </CitationContainer>
-            {/*<StyledButton>*/}
-            {/*    {play ? <Pause onClick={() => setPlay(false)}/> : <PlayArrow onClick={() => setPlay(true)}/>}*/}
-            {/*</StyledButton>*/}
         </StyledRoot>
     );
 }

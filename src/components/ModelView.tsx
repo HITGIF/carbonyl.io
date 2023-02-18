@@ -19,7 +19,7 @@ const Asset = React.forwardRef((props, ref) => {
 });
 
 export default function ModelView(
-    // {play}: { play: boolean }
+    {play}: { play: boolean }
 ) {
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
@@ -42,12 +42,12 @@ export default function ModelView(
 
     useFrame(() => {
         if (!ref.current) return;
-        // if (play) {
-        //     ref.current.rotation.x += 0.01;
-        //     ref.current.rotation.y += 0.01;
-        //     ref.current.rotation.z += 0.001;
-        //     // return;
-        // }
+        if (play) {
+            ref.current.rotation.x += 0.01;
+            ref.current.rotation.y += 0.01;
+            ref.current.rotation.z += 0.001;
+            return;
+        }
         animateTo(ref.current, target);
     });
 
@@ -69,7 +69,7 @@ export default function ModelView(
     };
 
     const handle = (mouse: { x: number, y: number }) => {
-        if (!ref.current) return;
+        if (!ref.current || play) return;
         const base = {
             x: 1.8,
             y: 0,
