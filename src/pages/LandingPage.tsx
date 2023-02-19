@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
-import { ButtonBase, Container, Stack, Typography } from "@mui/material";
+import { ButtonBase, Container, IconButton, Stack, Typography } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import { ArrowRightAlt } from "@mui/icons-material";
 
 const Root = styled(Container)(({theme}) => ({
     display: "flex",
@@ -122,8 +123,14 @@ export default function LandingPage() {
                                 🤟
                             </Typography>
                             <Typography variant="h5">
-                                ぶんしゅかぶんしゅか ぶんぶんぶん(えいっ☆)
+                                ぶんしゅかぶんしゅか ぶんぶんぶん<br/>(えいっ☆)
                             </Typography>
+                            <IconButton
+                                href={"https://youtu.be/7xKdRezA0vQ?t=45"}
+                                target={"_blank"}
+                            >
+                                <ArrowRightAlt/>
+                            </IconButton>
                         </Stack>
                     </BigBox>
                 </RightPanel>
