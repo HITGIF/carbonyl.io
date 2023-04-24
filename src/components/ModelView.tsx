@@ -1,9 +1,9 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useFrame, useLoader } from "react-three-fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Object3D } from "three/src/core/Object3D";
 
-const randomCoordinate = () => Math.random() * 3 + 0.01;
+const randomCoordinate = () => 0.01 + 3 * Math.random();
 
 const start = {
     x: randomCoordinate(),
@@ -22,22 +22,12 @@ export default function ModelView(
     {play}: { play: boolean }
 ) {
     useEffect(() => {
-        const handleMouseMove = (event: MouseEvent) => {
-            handle({x: event.clientX, y: event.clientY});
-        };
-
+        const handleMouseMove = (event: MouseEvent) => handle({x: event.clientX, y: event.clientY});
         window.addEventListener("mousemove", handleMouseMove);
-
-        return () => {
-            window.removeEventListener(
-                "mousemove",
-                handleMouseMove
-            );
-        };
+        return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
     const ref = React.useRef<Object3D>();
-
     let target: { x: number, y: number, z: number } = start;
 
     useFrame(() => {
@@ -57,15 +47,9 @@ export default function ModelView(
         const xDiff = x - object.rotation.x;
         const yDiff = y - object.rotation.y;
         const zDiff = z - object.rotation.z;
-        if (xDiff !== 0) {
-            object.rotation.x += xDiff * speed;
-        }
-        if (yDiff !== 0) {
-            object.rotation.y += yDiff * speed;
-        }
-        if (zDiff !== 0) {
-            object.rotation.z += zDiff * speed;
-        }
+        if (xDiff !== 0) object.rotation.x += xDiff * speed;
+        if (yDiff !== 0) object.rotation.y += yDiff * speed;
+        if (zDiff !== 0) object.rotation.z += zDiff * speed;
     };
 
     const handle = (mouse: { x: number, y: number }) => {
