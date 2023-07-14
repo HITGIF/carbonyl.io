@@ -126,7 +126,7 @@ export default function LandingPage() {
                                 ぶんしゅかぶんしゅか ぶんぶんぶん<br/>(えいっ☆)
                             </Typography>
                             <IconButton
-                                href={"https://youtu.be/7xKdRezA0vQ?t=45"}
+                                href={"https://linktr.ee/anhai.wang"}
                                 target={"_blank"}
                             >
                                 <ArrowRightAlt/>
