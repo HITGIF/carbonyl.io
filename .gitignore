@@ -12,6 +12,9 @@
 /build
 /dist
 
+# astro
+.astro/
+
 # misc
 .idea
 .DS_Store

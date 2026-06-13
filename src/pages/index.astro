@@ -1,0 +1,106 @@
+---
+import Base from "@/layouts/Base.astro";
+import Background from "@/components/Background";
+---
+
+<Base title="Carbonyl">
+  <div class="relative flex min-h-screen w-full overflow-hidden bg-primary">
+    <div class="absolute inset-0 h-full w-screen">
+      <Background client:only="react" />
+    </div>
+
+    <main class="relative z-10 mx-auto flex w-full max-w-6xl flex-grow items-center justify-center overflow-hidden px-4 py-20">
+      <div class="hidden h-[29rem] flex-grow flex-col items-center justify-between overflow-hidden md:flex">
+        <button
+          type="button"
+          aria-hidden="true"
+          tabindex="-1"
+          class="h-32 w-32 cursor-pointer bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 hover:h-36 hover:bg-white hover:[box-shadow:inset_0_0_0_0_white] focus:h-36 focus:bg-white focus:[box-shadow:inset_0_0_0_0_white] focus:outline-none"
+        ></button>
+        <button
+          type="button"
+          aria-hidden="true"
+          tabindex="-1"
+          class="h-32 w-32 cursor-pointer bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 hover:h-36 hover:bg-white hover:[box-shadow:inset_0_0_0_0_white] focus:h-36 focus:bg-white focus:[box-shadow:inset_0_0_0_0_white] focus:outline-none"
+        ></button>
+        <button
+          type="button"
+          aria-hidden="true"
+          tabindex="-1"
+          class="h-32 w-32 cursor-pointer bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 hover:h-36 hover:bg-white hover:[box-shadow:inset_0_0_0_0_white] focus:h-36 focus:bg-white focus:[box-shadow:inset_0_0_0_0_white] focus:outline-none"
+        ></button>
+      </div>
+
+      <div class="flex flex-grow items-center justify-center overflow-hidden">
+        <div
+          tabindex="0"
+          class="group relative flex h-[29rem] w-[29rem] max-w-[90%] cursor-default items-center justify-center bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 select-text hover:bg-primary hover:[box-shadow:inset_0_0_0_20px_white] focus:bg-primary focus:[box-shadow:inset_0_0_0_20px_white] focus:outline-none"
+        >
+          <div
+            class="absolute inset-0 flex items-center justify-start p-6 opacity-100 transition-opacity duration-200 group-hover:opacity-0 group-focus:opacity-0 sm:p-12"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 431.64 570.52"
+              preserveAspectRatio="xMinYMin meet"
+              class="h-full max-h-[344px] w-auto max-w-full"
+              style="fill: white;"
+            >
+              <path
+                d="M70.92,2.52c23.04,0,43.2-11.34,54-29.16l-24.84-14.4c-5.4,9.72-16.38,15.48-29.16,15.48C48.6-25.56,34.2-40.5,34.2-63s14.4-37.44,36.72-37.44c12.78,0,23.58,5.76,29.16,15.48l24.84-14.4c-10.98-17.82-31.14-29.16-54-29.16C32.94-128.52,5.4-100.08,5.4-63S32.94,2.52,70.92,2.52ZM254.52,0h31.5L243.18-126H206.46L163.62,0h31.5l6.3-19.8h46.8ZM210.06-46.8l14.76-46.26L239.58-46.8ZM399.06,0h30.96L403.2-46.26c13.86-7.02,23.22-21.06,23.22-36.54a43.1,43.1,0,0,0-43.2-43.2h-50.4V0h28.8V-41.4H375.3ZM361.62-99h21.6c7.92,0,14.4,7.02,14.4,16.2s-6.48,16.2-14.4,16.2h-21.6ZM88.92,155.66A31.542,31.542,0,0,0,99.9,131c0-21.78-17.82-36-39.78-36H10.8V221H63.72c22.5,0,40.68-14.58,40.68-36.9A32.535,32.535,0,0,0,88.92,155.66ZM60.12,122c6.66,0,10.98,4.68,10.98,11.16s-4.5,11.16-10.98,11.16H39.6V122Zm3.6,72H39.6V169.88H63.72c7.2,0,11.88,5.04,11.88,12.06S70.92,194,63.72,194Zm151.2,29.52c36.18,0,65.52-28.44,65.52-65.52S251.1,92.48,214.92,92.48,149.4,120.92,149.4,158,178.74,223.52,214.92,223.52Zm0-28.08c-20.52,0-36.72-14.94-36.72-37.44s16.2-37.44,36.72-37.44S251.64,135.5,251.64,158,235.44,195.44,214.92,195.44ZM402.84,95v68.4L354.24,95h-21.6V221h28.8V152.6l48.6,68.4h21.6V95ZM113.4,316H80.64L56.7,364.6,32.76,316H0l42.3,77.58V442H71.1V393.58ZM189,414.28V316H160.2V442H234V414.28Z"
+                transform="translate(0 128.52)"></path>
+            </svg>
+          </div>
+
+          <div
+            class="absolute inset-0 m-8 flex flex-col items-center justify-center gap-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100 md:m-16"
+          >
+            <span class="text-6xl leading-none md:text-7xl">🤟</span>
+            <p class="text-center text-lg font-bold leading-snug">
+              ぶんしゅかぶんしゅか ぶんぶんぶん<br />(えいっ☆)
+            </p>
+            <a
+              href="https://linktr.ee/anhai.wang"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-white/15"
+              aria-label="Linktree"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="h-7 w-7"
+                fill="currentColor"
+              >
+                <path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="group absolute bottom-4 left-5 z-20 flex items-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        class="h-[15px] w-[15px] text-white opacity-50"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zM7 7v5h2V7H7zm0-3v2h2V4H7z"
+        ></path>
+      </svg>
+      <span
+        class="ml-2.5 text-[15px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      >
+        Copyright &copy; {new Date().getFullYear()} Carbonyl<br />
+        Model made by
+        <a class="underline" href="https://sketchfab.com/iKuroiNeko">iKuroiNeko</a>
+        /
+        <a class="underline" href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
+      </span>
+    </div>
+  </div>
+</Base>
