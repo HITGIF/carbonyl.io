@@ -32,12 +32,19 @@ const { title = "Carbonyl" } = Astro.props;
         sessionStorage.setItem("inSiteNav", "1");
 
         // On touch devices, the browser plays its own back-swipe transition
-        // for traverse navigations. Astro's view-transition replaying on
+        // for the edge-swipe gesture. Astro's view-transition replaying on
         // top looks like a stutter, so suppress our transitions for that
         // case by clearing every transition-name on the outgoing page.
+        //
+        // The "← Posts" button calls history.back() programmatically, which
+        // does NOT trigger the native gesture animation — so for that path we
+        // keep our transition. It flags itself via window.__btnBack.
         const e = event as any;
+        const btnBack = (window as any).__btnBack;
+        (window as any).__btnBack = false;
         if (
           e.navigationType === "traverse" &&
+          !btnBack &&
           window.matchMedia("(pointer: coarse)").matches
         ) {
           document.documentElement.style.viewTransitionName = "none";

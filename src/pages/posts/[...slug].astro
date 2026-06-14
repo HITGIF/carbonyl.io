@@ -242,6 +242,9 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
         a.addEventListener("click", (e) => {
           if (sessionStorage.getItem("inSiteNav") === "1") {
             e.preventDefault();
+            // Mark this as a programmatic back so Base.astro keeps our view
+            // transition (no native edge-swipe animation competes with it).
+            (window as any).__btnBack = true;
             history.back();
           }
         });
@@ -268,6 +271,10 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
 
       const total = slides.length;
       let current = 0;
+      // Whether we currently hold a trapped history entry (see open/close),
+      // and the router state of the entry we nulled out so we can restore it.
+      let lbEntry = false;
+      let savedState: any = null;
 
       const updateUi = () => {
         lbCounter.textContent = `${current + 1} / ${total}`;
@@ -350,13 +357,33 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
         requestAnimationFrame(() => {
           scroller.scrollLeft = scroller.clientWidth * current;
         });
+        // Trap a history entry so the system Back button / back-swipe closes
+        // the lightbox instead of leaving the post. We null the current
+        // entry's router state and push a copy of it: on Back, Astro's router
+        // gets a null-state popstate and bails via its own early-return
+        // (router.js: `if (ev.state === null) return`), so it does NOT
+        // re-swap/reload the post page. onPopState restores the state.
+        if (!lbEntry) {
+          lbEntry = true;
+          savedState = history.state;
+          history.replaceState(null, "");
+          history.pushState(savedState, "");
+        }
       };
 
-      const close = () => {
+      // Visually dismiss the lightbox; no history side effects.
+      const hide = () => {
         lightbox.classList.add("hidden");
         lightbox.classList.remove("block");
         lightbox.setAttribute("aria-hidden", "true");
         document.body.style.overflow = "";
+      };
+
+      // Closing via the UI pops our trapped entry; the popstate handler then
+      // runs hide(). If somehow there's no entry, hide directly.
+      const close = () => {
+        if (lbEntry) history.back();
+        else hide();
       };
 
       const next = () => goTo(current + 1);
@@ -427,9 +454,22 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
       };
       document.addEventListener("keydown", onKey);
 
+      // Back (button / gesture) pops our trapped entry. Astro ignores the
+      // null-state popstate, so we just restore the entry's router state and
+      // close the overlay — no re-swap, no reload.
+      const onPopState = () => {
+        if (lbEntry) {
+          lbEntry = false;
+          history.replaceState(savedState, "");
+          hide();
+        }
+      };
+      window.addEventListener("popstate", onPopState);
+
       const cleanup = () => {
         document.removeEventListener("keydown", onKey);
         window.removeEventListener("resize", onResize);
+        window.removeEventListener("popstate", onPopState);
         document.body.style.overflow = "";
       };
       document.addEventListener("astro:before-swap", cleanup, { once: true });
