@@ -1,16 +1,30 @@
 ---
 import Base from "@/layouts/Base.astro";
-import Background from "@/components/Background";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("posts")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 ---
 
 <Base title="Carbonyl">
-  <div class="relative flex min-h-screen w-full overflow-hidden bg-primary">
-    <div class="absolute inset-0 h-full w-screen">
-      <Background client:only="react" />
-    </div>
-
-    <main class="relative z-10 mx-auto flex w-full max-w-6xl flex-grow items-center justify-center overflow-hidden px-4 py-20">
-      <div class="hidden h-[29rem] flex-grow flex-col items-center justify-between overflow-hidden md:flex">
+  <section
+    id="hero"
+    class="relative z-10 flex h-screen w-full items-center justify-center overflow-hidden"
+  >
+    <main
+      class="mx-auto flex w-full max-w-6xl grow items-center justify-center overflow-hidden px-4 py-20"
+    >
+      <div
+        class="hidden h-116 grow flex-col items-center justify-between overflow-hidden md:flex"
+      >
         <button
           type="button"
           aria-hidden="true"
@@ -31,19 +45,19 @@ import Background from "@/components/Background";
         ></button>
       </div>
 
-      <div class="flex flex-grow items-center justify-center overflow-hidden">
+      <div class="flex grow items-center justify-center overflow-hidden">
         <div
           tabindex="0"
-          class="group relative flex h-[29rem] w-[29rem] max-w-[90%] cursor-default items-center justify-center bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 select-text hover:bg-primary hover:[box-shadow:inset_0_0_0_20px_white] focus:bg-primary focus:[box-shadow:inset_0_0_0_20px_white] focus:outline-none"
+          class="group relative flex h-116 w-116 max-w-[90%] cursor-default items-center justify-center bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 select-text hover:bg-primary hover:[box-shadow:inset_0_0_0_20px_white] focus:bg-primary focus:[box-shadow:inset_0_0_0_20px_white] focus:outline-none"
         >
           <div
-            class="absolute inset-0 flex items-center justify-start p-6 opacity-100 transition-opacity duration-200 group-hover:opacity-0 group-focus:opacity-0 sm:p-12"
+            class="absolute inset-0 flex items-center justify-center p-6 opacity-100 transition-opacity duration-200 group-hover:opacity-0 group-focus:opacity-0 sm:justify-start sm:p-12"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 431.64 570.52"
+              viewBox="5.4 0 424.62 570.52"
               preserveAspectRatio="xMinYMin meet"
-              class="h-full max-h-[344px] w-auto max-w-full"
+              class="h-full max-h-86 w-auto max-w-full"
               style="fill: white;"
             >
               <path
@@ -56,9 +70,6 @@ import Background from "@/components/Background";
             class="absolute inset-0 m-8 flex flex-col items-center justify-center gap-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100 md:m-16"
           >
             <span class="text-6xl leading-none md:text-7xl">🤟</span>
-            <p class="text-center text-lg font-bold leading-snug">
-              ぶんしゅかぶんしゅか ぶんぶんぶん<br />(えいっ☆)
-            </p>
             <a
               href="https://linktr.ee/anhai.wang"
               target="_blank"
@@ -80,27 +91,155 @@ import Background from "@/components/Background";
       </div>
     </main>
 
-    <div class="group absolute bottom-4 left-5 z-20 flex items-center">
+    <div
+      class="pointer-events-none absolute right-0 bottom-6 left-0 flex flex-col items-center gap-2 text-white opacity-70"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        class="h-[15px] w-[15px] text-white opacity-50"
+        viewBox="0 0 24 24"
+        class="h-4 w-4 animate-bounce"
         fill="currentColor"
         aria-hidden="true"
       >
-        <path
-          d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zM7 7v5h2V7H7zm0-3v2h2V4H7z"
-        ></path>
+        <path d="M12 16l-6-6h12z"></path>
       </svg>
-      <span
-        class="ml-2.5 text-[15px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      >
-        Copyright &copy; {new Date().getFullYear()} Carbonyl<br />
-        Model made by
-        <a class="underline" href="https://sketchfab.com/iKuroiNeko">iKuroiNeko</a>
-        /
-        <a class="underline" href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
-      </span>
     </div>
-  </div>
+  </section>
+
+  <section
+    id="posts"
+    class="relative z-10 flex min-h-screen w-full flex-col px-4 pt-24 pb-32"
+  >
+    <div class="mx-auto w-full max-w-3xl">
+      <h2 class="mb-10 text-3xl font-bold tracking-tight text-white">Posts</h2>
+      <ul class="flex flex-col gap-4">
+        {
+          posts.map((post) => (
+            <li>
+              <a
+                href={`/posts/${post.id}`}
+                transition:name={`post-${post.id}`}
+                class="block rounded-lg bg-black/30 p-6 text-white backdrop-blur-md transition-colors hover:bg-black/45"
+              >
+                <h3 class="text-xl font-semibold">{post.data.title}</h3>
+                <time
+                  datetime={post.data.date.toISOString()}
+                  class="mt-1 block text-sm opacity-70"
+                >
+                  {formatDate(post.data.date)}
+                </time>
+                {post.data.description && (
+                  <p class="mt-3 leading-relaxed opacity-90">
+                    {post.data.description}
+                  </p>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <script>
+    const setup = () => {
+      const hero = document.getElementById("hero");
+      const posts = document.getElementById("posts");
+      if (!hero || !posts) return;
+      // Avoid double-binding if astro:page-load fires twice (e.g. SPA + back nav)
+      if ((window as any).__heroSnapBound) return;
+      (window as any).__heroSnapBound = true;
+
+      const state = {
+        animating: false,
+        lastWheel: 0,
+        touchY: 0,
+        timer: null as number | null,
+      };
+
+      // Lock for a fixed duration longer than the browser's smooth scroll.
+      // Detecting "animation done" from scrollY is unreliable on fast input:
+      // the trailing inertia events can sneak in with a flipped sign and
+      // trigger a reverse transition (the visible "bounce" back to posts).
+      const ANIM_LOCK_MS = 800;
+
+      const animateTo = (el: HTMLElement) => {
+        state.animating = true;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (state.timer !== null) clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.animating = false;
+          state.timer = null;
+        }, ANIM_LOCK_MS);
+      };
+
+      const transition = (dir: number) => {
+        if (state.animating) return true;
+        const y = window.scrollY;
+        const postsTop = posts.offsetTop;
+        if (dir > 0 && y < postsTop - 10) {
+          animateTo(posts);
+          return true;
+        }
+        if (dir < 0 && y <= postsTop + 10 && y > 10) {
+          animateTo(hero);
+          return true;
+        }
+        return false;
+      };
+
+      const onWheel = (e: WheelEvent) => {
+        if (state.animating) {
+          e.preventDefault();
+          return;
+        }
+        // Ignore tail-end inertia events whose deltaY is essentially noise.
+        // Without this, a trailing positive blip after a fast up-scroll can
+        // flip direction and trigger a transition back to posts.
+        if (Math.abs(e.deltaY) < 5) return;
+        const now = Date.now();
+        if (now - state.lastWheel < 40) return;
+        state.lastWheel = now;
+        const dir = e.deltaY > 0 ? 1 : -1;
+        if (transition(dir)) e.preventDefault();
+      };
+
+      const onTouchStart = (e: TouchEvent) => {
+        state.touchY = e.touches[0].clientY;
+      };
+
+      const onTouchMove = (e: TouchEvent) => {
+        if (state.animating) {
+          e.preventDefault();
+          return;
+        }
+        const dy = state.touchY - e.touches[0].clientY;
+        if (Math.abs(dy) < 20) return;
+        const dir = dy > 0 ? 1 : -1;
+        if (transition(dir)) {
+          e.preventDefault();
+          state.touchY = e.touches[0].clientY;
+        }
+      };
+
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+
+      const cleanup = () => {
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchmove", onTouchMove);
+        if (state.timer !== null) {
+          clearTimeout(state.timer);
+          state.timer = null;
+        }
+        (window as any).__heroSnapBound = false;
+      };
+
+      document.addEventListener("astro:before-swap", cleanup, { once: true });
+    };
+
+    document.addEventListener("astro:page-load", setup);
+  </script>
 </Base>

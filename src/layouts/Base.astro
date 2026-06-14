@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from "astro:transitions";
+import Background from "@/components/Background";
 import "@/styles/global.css";
 
 interface Props {
@@ -21,8 +23,198 @@ const { title = "Carbonyl" } = Astro.props;
       rel="stylesheet"
     />
     <title>{title}</title>
+    <ClientRouter />
+    <script>
+      // Mark the tab as having performed in-site navigation. Used by the
+      // detail page's ← Back button to decide between history.back() (which
+      // restores scroll) and a hard navigation to /#blog.
+      document.addEventListener("astro:before-preparation", () => {
+        sessionStorage.setItem("inSiteNav", "1");
+      });
+    </script>
   </head>
   <body class="bg-primary text-white">
+    <div class="pointer-events-none fixed inset-0 z-0">
+      <Background client:only="react" transition:persist="globe" />
+    </div>
+
     <slot />
+
+    <div
+      id="scroll-track"
+      transition:persist="scroll-track"
+      class="pointer-events-none fixed top-8 right-3 bottom-8 z-30 hidden w-0.75 rounded-full bg-white/15 transition-opacity duration-300 md:block"
+    >
+      <div
+        id="scroll-thumb"
+        class="absolute top-0 left-0 w-full rounded-full bg-white/70"
+        style="height: 0; transform: translateY(0)"
+      ></div>
+    </div>
+
+    <script>
+      const updateScrollIndicator = () => {
+        const track = document.getElementById("scroll-track");
+        const thumb = document.getElementById("scroll-thumb");
+        if (!track || !thumb) return;
+
+        const docHeight = document.documentElement.scrollHeight;
+        const viewportHeight = window.innerHeight;
+
+        // Nothing to indicate if the page fits.
+        if (docHeight <= viewportHeight + 1) {
+          track.style.opacity = "0";
+          return;
+        }
+        track.style.opacity = "";
+
+        const trackHeight = track.clientHeight;
+        const scrollableArea = docHeight - viewportHeight;
+        const scrollRatio = Math.min(
+          1,
+          Math.max(0, window.scrollY / scrollableArea),
+        );
+        const minThumb = 24;
+        const thumbHeight = Math.max(
+          minThumb,
+          (viewportHeight / docHeight) * trackHeight,
+        );
+        const thumbTop = scrollRatio * (trackHeight - thumbHeight);
+
+        thumb.style.height = `${thumbHeight}px`;
+        thumb.style.transform = `translateY(${thumbTop}px)`;
+      };
+
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateScrollIndicator();
+          ticking = false;
+        });
+      };
+
+      if (!(window as any).__scrollIndicatorBound) {
+        (window as any).__scrollIndicatorBound = true;
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+      }
+
+      // Re-measure after each navigation — the document height changes.
+      document.addEventListener("astro:page-load", () => {
+        requestAnimationFrame(updateScrollIndicator);
+      });
+    </script>
+
+    <div
+      id="citation"
+      transition:persist="citation"
+      class="group fixed bottom-4 left-5 z-20 flex items-center"
+    >
+      <button
+        id="citation-toggle"
+        type="button"
+        aria-label="Show copyright"
+        aria-expanded="false"
+        class="-m-2 flex cursor-pointer items-center justify-center p-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          class="h-3.75 w-3.75 text-white opacity-50"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zM7 7v5h2V7H7zm0-3v2h2V4H7z"
+          ></path>
+        </svg>
+      </button>
+      <span
+        id="citation-text"
+        class="ml-2.5 text-[15px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      >
+        Copyright &copy; {new Date().getFullYear()} Carbonyl<br />
+        Model made by
+        <a class="underline" href="https://sketchfab.com/iKuroiNeko">iKuroiNeko</a>
+        /
+        <a class="underline" href="https://creativecommons.org/licenses/by/4.0/">
+          CC BY
+        </a>
+      </span>
+    </div>
+
+    <button
+      id="scroll-top"
+      type="button"
+      aria-label="Scroll to top"
+      transition:persist="scroll-top"
+      class="pointer-events-none fixed right-4 bottom-4 z-20 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white opacity-0 backdrop-blur-md transition-opacity duration-200 hover:bg-white/25"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        class="h-5 w-5"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M12 8l-6 6h12z"></path>
+      </svg>
+    </button>
+
+    <script>
+      // Tap-to-toggle for the copyright popup (hover doesn't work on touch).
+      const wireCitation = () => {
+        const root = document.getElementById("citation");
+        const toggle = document.getElementById("citation-toggle");
+        const text = document.getElementById("citation-text");
+        if (!root || !toggle || !text) return;
+        if ((toggle as any).__wired) return;
+        (toggle as any).__wired = true;
+
+        const setOpen = (open: boolean) => {
+          text.style.opacity = open ? "1" : "";
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        };
+
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = toggle.getAttribute("aria-expanded") === "true";
+          setOpen(!isOpen);
+        });
+        // Tap outside closes.
+        document.addEventListener("click", (e) => {
+          if (!root.contains(e.target as Node)) setOpen(false);
+        });
+      };
+
+      // Scroll-to-top button: visible once you're past the hero, smooth scroll
+      // back to (0, 0). Re-uses the same persistent element across nav.
+      const wireScrollTop = () => {
+        const btn = document.getElementById("scroll-top");
+        if (!btn) return;
+
+        const onScroll = () => {
+          const past = window.scrollY > window.innerHeight * 0.5;
+          btn.style.opacity = past ? "1" : "0";
+          btn.style.pointerEvents = past ? "auto" : "none";
+        };
+
+        if (!(window as any).__scrollTopBound) {
+          (window as any).__scrollTopBound = true;
+          window.addEventListener("scroll", onScroll, { passive: true });
+          btn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        }
+        onScroll();
+      };
+
+      document.addEventListener("astro:page-load", () => {
+        wireCitation();
+        wireScrollTop();
+      });
+    </script>
   </body>
 </html>
