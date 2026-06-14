@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -21,39 +22,36 @@ const formatDate = (date: Date) =>
   });
 
 const hasImages = !!post.data.images && post.data.images.length > 0;
-
-// Pull intrinsic dimensions out of common URLs that encode them
-// (e.g. picsum.photos /seed/x/W/H). Used as width/height attrs so the
-// browser reserves correct layout space before the image loads, and as
-// a hint for the shimmer placeholder.
-const parseDims = (src: string): [number, number] | null => {
-  const m = src.match(/\/(\d+)\/(\d+)(?:[/?#]|$)/);
-  return m ? [parseInt(m[1], 10), parseInt(m[2], 10)] : null;
-};
 ---
 
-<Base title={`${post.data.title} — Carbonyl`}>
-  <article
-    class="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-4 pt-24 pb-32"
-  >
+<Base title={post.data.title ? `${post.data.title} — Carbonyl` : "Carbonyl"}>
+  <article class="relative z-10 flex min-h-screen w-full flex-col pt-24 pb-32 sm:px-4">
+    <div class="mx-auto flex w-full max-w-3xl flex-col gap-8">
     <a
       href="/#posts"
       data-back
-      class="self-start text-sm text-white opacity-70 transition-opacity hover:opacity-100"
+      class="mx-4 self-start text-sm text-white opacity-70 transition-opacity hover:opacity-100 sm:mx-0"
     >
       &larr; Posts
     </a>
 
     <div
       transition:name={`post-${post.id}`}
-      class="rounded-lg bg-black/30 p-8 text-white backdrop-blur-md"
+      class="bg-black/30 p-8 text-white backdrop-blur-md sm:rounded-lg"
     >
-      <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
-        {post.data.title}
-      </h1>
+      {
+        post.data.title && (
+          <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
+            {post.data.title}
+          </h1>
+        )
+      }
       <time
         datetime={post.data.date.toISOString()}
-        class="mt-2 block text-sm opacity-70"
+        class:list={[
+          "block text-sm opacity-70",
+          post.data.title && "mt-2",
+        ]}
       >
         {formatDate(post.data.date)}
       </time>
@@ -69,35 +67,33 @@ const parseDims = (src: string): [number, number] | null => {
       {
         hasImages && (
           <div class="mt-8 flex flex-col gap-6">
-            {post.data.images!.map((image, i) => {
-              const dims = parseDims(image.src);
-              return (
-                <figure
-                  data-lightbox-image
-                  data-index={i}
-                  class="lb-img-wrap group relative cursor-zoom-in overflow-hidden rounded-md"
-                >
-                  <img
-                    src={image.src}
-                    alt={image.alt ?? image.caption ?? ""}
-                    loading="lazy"
-                    width={dims?.[0]}
-                    height={dims?.[1]}
-                    class="lb-img block h-auto w-full opacity-0 transition-opacity duration-500"
-                  />
-                  {image.caption && (
-                    <figcaption class="caption-overlay absolute inset-0 flex select-text items-end bg-linear-to-t from-black/80 via-black/0 to-black/0 p-6 opacity-0 transition-opacity duration-200">
-                      <p class="text-base leading-snug text-white md:text-lg">
-                        {image.caption}
-                      </p>
-                    </figcaption>
-                  )}
-                </figure>
-              );
-            })}
+            {post.data.images!.map((image, i) => (
+              <figure
+                data-lightbox-image
+                data-index={i}
+                class="lb-img-wrap group relative cursor-zoom-in overflow-hidden rounded-md"
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt ?? image.caption ?? ""}
+                  loading="lazy"
+                  widths={[480, 960, 1440]}
+                  sizes="(max-width: 768px) 100vw, 720px"
+                  class="lb-img block h-auto w-full opacity-0 transition-opacity duration-500"
+                />
+                {image.caption && (
+                  <figcaption class="caption-overlay absolute inset-0 flex select-text items-end bg-linear-to-t from-black/80 via-black/0 to-black/0 p-6 opacity-0 transition-opacity duration-200">
+                    <p class="text-base leading-snug text-white md:text-lg">
+                      {image.caption}
+                    </p>
+                  </figcaption>
+                )}
+              </figure>
+            ))}
           </div>
         )
       }
+    </div>
     </div>
   </article>
 
@@ -121,20 +117,42 @@ const parseDims = (src: string): [number, number] | null => {
           id="lb-prev"
           type="button"
           aria-label="Previous"
-          class="group/nav absolute top-0 bottom-0 left-0 z-20 hidden w-32 cursor-pointer items-center justify-center bg-linear-to-r from-white/10 to-transparent text-5xl leading-none text-white transition-colors hover:from-white/20 md:flex"
+          class="group/nav absolute top-0 bottom-0 left-0 z-20 hidden w-1/3 cursor-pointer items-center justify-start pl-12 text-white focus:outline-none focus-visible:outline-none md:flex"
         >
-          <span class="opacity-80 transition-opacity group-hover/nav:opacity-100">
-            &lsaquo;
+          <span class="flex h-14 w-14 items-center justify-center rounded-full opacity-0 transition-opacity duration-200 group-hover/nav:opacity-[var(--chevron-op,1)] group-focus-visible/nav:opacity-[var(--chevron-op,1)] group-focus-visible/nav:outline-2 group-focus-visible/nav:outline-offset-4 group-focus-visible/nav:outline-white/70">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-7 w-7"
+              aria-hidden="true"
+            >
+              <polyline points="15 6 9 12 15 18" />
+            </svg>
           </span>
         </button>
         <button
           id="lb-next"
           type="button"
           aria-label="Next"
-          class="group/nav absolute top-0 right-0 bottom-0 z-20 hidden w-32 cursor-pointer items-center justify-center bg-linear-to-l from-white/10 to-transparent text-5xl leading-none text-white transition-colors hover:from-white/20 md:flex"
+          class="group/nav absolute top-0 right-0 bottom-0 z-20 hidden w-1/3 cursor-pointer items-center justify-end pr-12 text-white focus:outline-none focus-visible:outline-none md:flex"
         >
-          <span class="opacity-80 transition-opacity group-hover/nav:opacity-100">
-            &rsaquo;
+          <span class="flex h-14 w-14 items-center justify-center rounded-full opacity-0 transition-opacity duration-200 group-hover/nav:opacity-[var(--chevron-op,1)] group-focus-visible/nav:opacity-[var(--chevron-op,1)] group-focus-visible/nav:outline-2 group-focus-visible/nav:outline-offset-4 group-focus-visible/nav:outline-white/70">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-7 w-7"
+              aria-hidden="true"
+            >
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
           </span>
         </button>
 
@@ -142,32 +160,29 @@ const parseDims = (src: string): [number, number] | null => {
           id="lb-scroller"
           class="lb-no-scrollbar flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
         >
-          {post.data.images!.map((image, i) => {
-            const dims = parseDims(image.src);
-            return (
-              <div
-                data-slide
-                data-index={i}
-                class="flex h-full w-screen shrink-0 snap-start flex-col items-center justify-center gap-4 px-4 pt-16 pb-20"
-              >
-                <div class="lb-img-wrap relative overflow-hidden rounded">
-                  <img
-                    src={image.src}
-                    alt={image.alt ?? image.caption ?? ""}
-                    loading="lazy"
-                    width={dims?.[0]}
-                    height={dims?.[1]}
-                    class="lb-img block max-h-[70vh] max-w-full object-contain opacity-0 transition-opacity duration-300"
-                  />
-                </div>
-                {image.caption && (
-                  <p class="max-w-2xl text-center text-base leading-snug text-white opacity-90 select-text md:text-lg">
-                    {image.caption}
-                  </p>
-                )}
+          {post.data.images!.map((image, i) => (
+            <div
+              data-slide
+              data-index={i}
+              class="relative flex h-full w-screen shrink-0 snap-start flex-col items-center"
+            >
+              <div class="lb-img-wrap relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded">
+                <Image
+                  src={image.src}
+                  alt={image.alt ?? image.caption ?? ""}
+                  loading="lazy"
+                  widths={[1200, 1800, 2400]}
+                  sizes="100vw"
+                  class="lb-img block h-full max-h-full w-full max-w-full object-contain opacity-0 transition-opacity duration-300"
+                />
               </div>
-            );
-          })}
+              {image.caption && (
+                <p class="absolute right-0 bottom-12 left-0 mx-auto max-w-2xl px-6 text-center text-base leading-snug text-white drop-shadow-md select-text md:text-lg">
+                  {image.caption}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
 
         <div
@@ -254,17 +269,20 @@ const parseDims = (src: string): [number, number] | null => {
       const total = slides.length;
       let current = 0;
 
-      const prevArrow = lbPrev.querySelector("span") as HTMLElement | null;
-      const nextArrow = lbNext.querySelector("span") as HTMLElement | null;
-
       const updateUi = () => {
         lbCounter.textContent = `${current + 1} / ${total}`;
-        // Dim arrows at the bounds, but keep the buttons present and clickable
-        // so the click is absorbed instead of falling through to the slide
-        // background (which would close the gallery).
-        if (prevArrow) prevArrow.style.opacity = current > 0 ? "" : "0.25";
-        if (nextArrow)
-          nextArrow.style.opacity = current < total - 1 ? "" : "0.25";
+        // Boundary state — chevron stays hidden until hover, then reveals at
+        // 1.0 normally, 0.25 if you're at the end of the gallery (visual cue
+        // that clicking won't do anything). Button itself stays clickable so
+        // the click is absorbed instead of falling through to close.
+        lbPrev.style.setProperty(
+          "--chevron-op",
+          current > 0 ? "1" : "0.25",
+        );
+        lbNext.style.setProperty(
+          "--chevron-op",
+          current < total - 1 ? "1" : "0.25",
+        );
       };
 
       // Snappy custom animation: fast start, quick deceleration.

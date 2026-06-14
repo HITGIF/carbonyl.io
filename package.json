@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "resize": "node scripts/resize-images.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -25,6 +26,8 @@
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/three": "^0.172.0"
+    "@types/three": "^0.172.0",
+    "heic-convert": "^2.1.0",
+    "sharp": "^0.34.5"
   }
 }
