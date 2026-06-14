@@ -20,13 +20,13 @@ const formatDate = (date: Date) =>
 <Base title="Carbonyl">
   <section
     id="hero"
-    class="relative z-10 flex h-screen w-full items-center justify-center overflow-hidden"
+    class="relative z-10 flex h-svh w-full items-center justify-center overflow-hidden"
   >
     <main
       class="mx-auto flex w-full max-w-6xl grow items-center justify-center overflow-hidden px-4 py-20"
     >
       <div
-        class="hidden h-116 grow flex-col items-center justify-between overflow-hidden md:flex"
+        class="hidden h-[min(29rem,80vmin)] grow flex-col items-center justify-between overflow-hidden md:flex"
       >
         <button
           type="button"
@@ -51,16 +51,16 @@ const formatDate = (date: Date) =>
       <div class="flex grow items-center justify-center overflow-hidden">
         <div
           tabindex="0"
-          class="group relative flex h-116 w-116 max-w-[90%] cursor-default items-center justify-center bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 select-text hover:bg-primary hover:[box-shadow:inset_0_0_0_20px_white] focus:bg-primary focus:[box-shadow:inset_0_0_0_20px_white] focus:outline-none"
+          class="group relative flex aspect-square w-[min(29rem,80vmin)] cursor-default items-center justify-center bg-white/0 [box-shadow:inset_0_0_0_12px_white] transition-all duration-200 select-text hover:bg-primary hover:[box-shadow:inset_0_0_0_20px_white] focus:bg-primary focus:[box-shadow:inset_0_0_0_20px_white] focus:outline-none"
         >
           <div
-            class="absolute inset-0 flex items-center justify-center p-6 opacity-100 transition-opacity duration-200 group-hover:opacity-0 group-focus:opacity-0 sm:justify-start sm:p-12"
+            class="absolute inset-0 flex items-center justify-start p-6 opacity-100 transition-opacity duration-200 group-hover:opacity-0 group-focus:opacity-0 sm:p-12"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="5.4 0 424.62 570.52"
               preserveAspectRatio="xMinYMin meet"
-              class="h-full max-h-86 w-auto max-w-full"
+              class="h-full w-auto max-w-full"
               style="fill: white;"
             >
               <path
@@ -111,7 +111,7 @@ const formatDate = (date: Date) =>
 
   <section
     id="posts"
-    class="relative z-10 flex min-h-screen w-full flex-col px-4 pt-24 pb-32"
+    class="relative z-10 flex min-h-lvh w-full flex-col px-4 pt-24 pb-32"
   >
     <div class="mx-auto w-full max-w-3xl">
       <h2 class="mb-10 text-3xl font-bold tracking-tight text-white">Posts</h2>
@@ -194,6 +194,39 @@ const formatDate = (date: Date) =>
         timer: null as number | null,
       };
 
+      // Phase-aware sizing of the posts spacer. Mobile Chrome clamps scrollY
+      // against two *different* viewport heights depending on phase:
+      //   - before the first user gesture (incl. during scroll-restore on a
+      //     back-nav): the LARGE viewport (lvh, URL-bar-hidden height).
+      //   - after the first gesture: innerHeight (svh, bar-shown height).
+      // These differ by exactly the "chevron peek" amount (lvh - ih ~= 36px),
+      // which is why no single static height wins:
+      //   - tall (lvh): survives the restore clamp (no peek) but lets you
+      //     over-scroll into dead space once browsing (ih clamp).
+      //   - short (ih): no over-scroll while browsing, but the restore clamp
+      //     (lvh) drops scrollY below posts.offsetTop -> the peek returns.
+      // So we keep the tall CSS baseline (min-h-lvh) through the restore/idle
+      // window, and shrink to innerHeight only on the first *genuine* gesture
+      // — the same moment the clamp basis flips to ih, so it causes no jump.
+      // (Must not shrink on plain 'scroll': Astro's restore fires that
+      // programmatically and would shrink mid-restore, recreating the peek.)
+      let interacted = false;
+      const sizePosts = () => {
+        posts.style.minHeight = `${window.innerHeight}px`;
+      };
+      const resetPostsHeight = () => {
+        posts.style.minHeight = "";
+      };
+      const onFirstInteract = () => {
+        if (interacted) return;
+        interacted = true;
+        sizePosts();
+      };
+      // Before navigating away, restore the tall baseline so the outgoing
+      // snapshot is clamp-safe for the next restore too.
+      document.addEventListener("astro:before-preparation", resetPostsHeight);
+      window.addEventListener("keydown", onFirstInteract);
+
       // Lock for a fixed duration longer than the browser's smooth scroll.
       // Detecting "animation done" from scrollY is unreliable on fast input:
       // the trailing inertia events can sneak in with a flipped sign and
@@ -202,7 +235,10 @@ const formatDate = (date: Date) =>
 
       const animateTo = (el: HTMLElement) => {
         state.animating = true;
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Use an explicit offset rather than scrollIntoView: during the
+        // just-finished view transition, scrollIntoView resolves the target
+        // against a transient layout and lands tens of px short.
+        window.scrollTo({ top: el === hero ? 0 : el.offsetTop, behavior: "smooth" });
         if (state.timer !== null) clearTimeout(state.timer);
         state.timer = window.setTimeout(() => {
           state.animating = false;
@@ -226,6 +262,7 @@ const formatDate = (date: Date) =>
       };
 
       const onWheel = (e: WheelEvent) => {
+        onFirstInteract();
         if (state.animating) {
           e.preventDefault();
           return;
@@ -242,6 +279,7 @@ const formatDate = (date: Date) =>
       };
 
       const onTouchStart = (e: TouchEvent) => {
+        onFirstInteract();
         state.touchY = e.touches[0].clientY;
       };
 
@@ -251,11 +289,24 @@ const formatDate = (date: Date) =>
           return;
         }
         const dy = state.touchY - e.touches[0].clientY;
-        if (Math.abs(dy) < 20) return;
+        if (dy === 0) return;
         const dir = dy > 0 ? 1 : -1;
-        if (transition(dir)) {
+        const y = window.scrollY;
+        const postsTop = posts.offsetTop;
+
+        // Define narrow "intercept zones" around the hero ↔ posts boundary.
+        // Inside a zone every touchmove is preventDefault'd so the user
+        // can't accumulate tiny scrolls to creep past. A real, committed
+        // swipe (≥30px) snaps; otherwise the scroll just doesn't happen.
+        const downIntercept = dir > 0 && y < postsTop - 10;
+        const upIntercept = dir < 0 && y > 10 && y <= postsTop + 50;
+
+        if (downIntercept || upIntercept) {
           e.preventDefault();
-          state.touchY = e.touches[0].clientY;
+          if (Math.abs(dy) >= 30) {
+            animateTo(downIntercept ? posts : hero);
+            state.touchY = e.touches[0].clientY;
+          }
         }
       };
 
@@ -279,6 +330,7 @@ const formatDate = (date: Date) =>
         if (resizeRaf !== null) return;
         resizeRaf = requestAnimationFrame(() => {
           resizeRaf = null;
+          if (interacted) sizePosts();
           const newPostsTop = posts.offsetTop;
           const dY = newPostsTop - lastPostsTop;
           if (lastY >= lastPostsTop && dY !== 0) {
@@ -296,6 +348,11 @@ const formatDate = (date: Date) =>
         window.removeEventListener("touchmove", onTouchMove);
         window.removeEventListener("scroll", recordScroll);
         window.removeEventListener("resize", onResize);
+        window.removeEventListener("keydown", onFirstInteract);
+        document.removeEventListener(
+          "astro:before-preparation",
+          resetPostsHeight,
+        );
         if (state.timer !== null) {
           clearTimeout(state.timer);
           state.timer = null;

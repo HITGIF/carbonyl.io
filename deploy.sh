@@ -1,2 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
 yarn build
-scp -r dist/* bwg:~/www/carbonyl.io
+rsync -avz --delete dist/ bwg:~/www/carbonyl.io/

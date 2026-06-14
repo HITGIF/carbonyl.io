@@ -12,6 +12,7 @@ function Planet({ play }: { play: boolean }) {
     y: randomCoordinate(),
     z: randomCoordinate(),
   });
+  const pausedRef = useRef(false);
   const { scene } = useGLTF("/models/small_planet/scene.gltf");
 
   // Apply scale/initial rotation during render so first paint is correct.
@@ -35,9 +36,34 @@ function Planet({ play }: { play: boolean }) {
     return () => window.removeEventListener("mousemove", onMove);
   }, [play]);
 
+  // Pause rotation while navigating away. The browser captures a paint
+  // snapshot of the page at this moment (for back-gesture previews and
+  // bfcache); pausing makes the resumed live state match that snapshot, so
+  // there's no visible "jump" when the user returns.
+  useEffect(() => {
+    const pause = () => {
+      pausedRef.current = true;
+    };
+    const resume = () => {
+      pausedRef.current = false;
+    };
+    document.addEventListener("astro:before-preparation", pause);
+    document.addEventListener("astro:after-swap", resume);
+    document.addEventListener("astro:page-load", resume);
+    window.addEventListener("pagehide", pause);
+    window.addEventListener("pageshow", resume);
+    return () => {
+      document.removeEventListener("astro:before-preparation", pause);
+      document.removeEventListener("astro:after-swap", resume);
+      document.removeEventListener("astro:page-load", resume);
+      window.removeEventListener("pagehide", pause);
+      window.removeEventListener("pageshow", resume);
+    };
+  }, []);
+
   useFrame(() => {
     const obj = ref.current;
-    if (!obj) return;
+    if (!obj || pausedRef.current) return;
     if (play) {
       obj.rotation.x += 0.01;
       obj.rotation.y += 0.01;

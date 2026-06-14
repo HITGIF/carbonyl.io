@@ -25,7 +25,7 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
 ---
 
 <Base title={post.data.title ? `${post.data.title} — Carbonyl` : "Carbonyl"}>
-  <article class="relative z-10 flex min-h-screen w-full flex-col pt-24 pb-32 sm:px-4">
+  <article class="relative z-10 flex min-h-dvh w-full flex-col pt-24 pb-32 sm:px-4">
     <div class="mx-auto flex w-full max-w-3xl flex-col gap-8">
     <a
       href="/#posts"
@@ -164,7 +164,7 @@ const hasImages = !!post.data.images && post.data.images.length > 0;
             <div
               data-slide
               data-index={i}
-              class="relative flex h-full w-screen shrink-0 snap-start flex-col items-center"
+              class="relative flex h-full w-screen shrink-0 snap-start snap-always flex-col items-center"
             >
               <div class="lb-img-wrap relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded">
                 <Image

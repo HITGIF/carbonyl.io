@@ -28,8 +28,25 @@ const { title = "Carbonyl" } = Astro.props;
       // Mark the tab as having performed in-site navigation. Used by the
       // detail page's ← Back button to decide between history.back() (which
       // restores scroll) and a hard navigation to /#blog.
-      document.addEventListener("astro:before-preparation", () => {
+      document.addEventListener("astro:before-preparation", (event) => {
         sessionStorage.setItem("inSiteNav", "1");
+
+        // On touch devices, the browser plays its own back-swipe transition
+        // for traverse navigations. Astro's view-transition replaying on
+        // top looks like a stutter, so suppress our transitions for that
+        // case by clearing every transition-name on the outgoing page.
+        const e = event as any;
+        if (
+          e.navigationType === "traverse" &&
+          window.matchMedia("(pointer: coarse)").matches
+        ) {
+          document.documentElement.style.viewTransitionName = "none";
+          document
+            .querySelectorAll<HTMLElement>("[data-astro-transition-scope]")
+            .forEach((el) => {
+              el.style.viewTransitionName = "none";
+            });
+        }
       });
     </script>
   </head>
@@ -216,5 +233,7 @@ const { title = "Carbonyl" } = Astro.props;
         wireScrollTop();
       });
     </script>
+
+
   </body>
 </html>
